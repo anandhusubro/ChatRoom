@@ -1,3 +1,4 @@
+
 function divEscapedContentElement(message) {
   var div = document.createElement('div');
   div.textContent = message;
@@ -5,12 +6,13 @@ function divEscapedContentElement(message) {
 }
 
 function divSystemContentElement(message) {
-  var div = document.createElement('div');
+  var div = document.createElement('div');  
   div.innerHTML = '<i>' + message + '</i>';
   return div;
 }
 
-function processUserInput(chatApp, socket) {
+function processUserInput(chatApp, _socket) {
+    console.log('message is sent')
   var message = document.getElementById('send-message').value;
   var systemMessage;
   if (message.charAt(0) == '/') {
@@ -18,7 +20,8 @@ function processUserInput(chatApp, socket) {
       if (systemMessage) {
           document.getElementById('message').appendChild(divSystemContentElement(systemMessage));
       }
-  } else {
+  }else 
+  {
       chatApp.sendMessage(document.getElementById('rooms').textContent, message);
       document.getElementById('message').appendChild(divEscapedContentElement(message));
       document.getElementById('message').scrollTop = document.getElementById('message').scrollHeight;
@@ -35,14 +38,15 @@ document.addEventListener('DOMContentLoaded', function() {
       var message;
       if (result.success) {
           message = 'You are now known as ' + result.name + '.';
-      } else {
+      }else
+      {
           message = result.message;
       }
       document.getElementById('message').appendChild(divSystemContentElement(message));
   });
 
 
-});
+
 
 
   socket.on('joinResult', function(result) {
@@ -67,21 +71,23 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       var roomDivs = roomsList.getElementsByTagName('div');
       for (var i = 0; i < roomDivs.length; i++) {
-          roomDivs[i].addEventListener('click', function() {
-              chatApp.processCommand('/join' + this.textContent);
-              document.getElementById('send-message').focus();
-          });
-      }
+        roomDivs[i].addEventListener('click', () => {
+            chatApp.processCommand('/join' + this.textContent);
+            document.getElementById('send-message').focus();
+        });
+    }
+    
   });
 
   setInterval(function() {
       socket.emit('rooms');
-  }, 1000);
+  }, 3000);
 
-  document.getElementById('send-message').focus();
+  
+  document.querySelector('#send-message').focus();
 
   document.getElementById('send-form').addEventListener('submit', function(event) {
       event.preventDefault();
       processUserInput(chatApp, socket);
   });
-
+});
